@@ -9,241 +9,140 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>推し活マネージャー｜高嶺のなでしこ</title>
 <style>
-  :root {
-    --pink: #c94b7b;
-    --pink-light: #fbeaf0;
-    --pink-dark: #8b2d55;
-    --blue: #2563a8;
-    --blue-light: #e8f0fb;
-    --green: #2a7a4b;
-    --green-light: #e8f5ee;
-    --amber: #92520a;
-    --amber-light: #fdf0dc;
-    --red: #b91c1c;
-    --red-light: #fef2f2;
-    --gray: #64748b;
-    --gray-light: #f8fafc;
-    --border: #e2e8f0;
-    --text: #1e293b;
-    --text-muted: #64748b;
-    --white: #ffffff;
-    --radius: 12px;
-    --radius-sm: 8px;
-    --shadow: 0 1px 3px rgba(0,0,0,0.08);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-    --nav-h: 64px;
-    --header-h: 56px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; overflow: hidden; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif; background: var(--gray-light); color: var(--text); font-size: 15px; }
-
-  /* ── Header ── */
-  .header {
-    position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
-    background: var(--white); border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; padding: 0 16px; gap: 10px; z-index: 100;
-  }
-  .header-logo { width: 34px; height: 34px; border-radius: 50%; background: var(--pink-light); display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .header-text { flex: 1; }
-  .header-title { font-size: 15px; font-weight: 700; color: var(--text); }
-  .header-sub { font-size: 11px; color: var(--text-muted); }
-  .header-alert { background: var(--red-light); color: var(--red); font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; display: none; align-items: center; gap: 4px; cursor: pointer; border: none; }
-  .header-alert.show { display: flex; }
-
-  /* ── Bottom Nav ── */
-  .nav {
-    position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h);
-    background: var(--white); border-top: 1px solid var(--border);
-    display: flex; z-index: 100;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  .nav-item {
-    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; cursor: pointer; color: var(--text-muted); font-size: 10px; font-weight: 500;
-    padding: 8px 4px; border: none; background: none; transition: color 0.15s;
-  }
-  .nav-item.on { color: var(--pink); }
-  .nav-item svg { width: 22px; height: 22px; stroke-width: 1.8; }
-
-  /* ── Scroll Area ── */
-  .scroll-area {
-    position: fixed; top: var(--header-h); bottom: var(--nav-h);
-    left: 0; right: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
-    padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
-  }
-  .panel { display: none; }
-  .panel.on { display: block; }
-
-  /* ── Cards & Layout ── */
-  .card {
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px;
-    box-shadow: var(--shadow);
-  }
-  .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
-  .stat { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; box-shadow: var(--shadow); }
-  .stat-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
-  .stat-val { font-size: 22px; font-weight: 700; color: var(--text); }
-  .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-  .sec-title { font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.6px; text-transform: uppercase; margin: 14px 0 8px; }
-
-  /* ── Tags ── */
-  .tag { font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; white-space: nowrap; display: inline-flex; align-items: center; gap: 3px; }
-  .tag-pink { background: var(--pink-light); color: var(--pink-dark); }
-  .tag-blue { background: var(--blue-light); color: var(--blue); }
-  .tag-amber { background: var(--amber-light); color: var(--amber); }
-  .tag-green { background: var(--green-light); color: var(--green); }
-  .tag-red { background: var(--red-light); color: var(--red); }
-  .tag-gray { background: var(--gray-light); color: var(--gray); border: 1px solid var(--border); }
-
-  /* ── Buttons ── */
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 9px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
-    cursor: pointer; border: 1px solid var(--border); background: var(--white); color: var(--text);
-    transition: opacity 0.15s; -webkit-appearance: none;
-  }
-  .btn:active { opacity: 0.7; }
-  .btn-pink { background: var(--pink); color: #fff; border-color: var(--pink); }
-  .btn-blue { background: var(--blue); color: #fff; border-color: var(--blue); }
-  .btn-sm { padding: 5px 12px; font-size: 12px; }
-  .btn-danger { background: var(--red-light); color: var(--red); border-color: #fecaca; }
-  .btn-full { width: 100%; justify-content: center; }
-  .btn:disabled { opacity: 0.4; }
-
-  /* ── Forms ── */
-  .form-group { margin-bottom: 12px; }
-  .form-label { font-size: 12px; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 5px; }
-  .form-input, .form-select, .form-textarea {
-    width: 100%; padding: 10px 12px; border: 1px solid var(--border);
-    border-radius: var(--radius-sm); font-size: 14px; color: var(--text);
-    background: var(--white); -webkit-appearance: none; appearance: none;
-    font-family: inherit;
-  }
-  .form-textarea { resize: vertical; min-height: 70px; }
-  .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--pink); }
-  .form-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .form-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-  .checkbox-row { display: flex; gap: 16px; align-items: center; }
-  .checkbox-item { display: flex; align-items: center; gap: 6px; font-size: 14px; }
-  .checkbox-item input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--pink); }
-
-  /* ── Modal ── */
-  .modal-bg {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-    z-index: 200; align-items: flex-end; justify-content: center;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  .modal-bg.show { display: flex; }
-  .modal {
-    background: var(--white); border-radius: 20px 20px 0 0; width: 100%;
-    max-height: 90vh; overflow-y: auto; padding: 20px 16px;
-    padding-bottom: calc(20px + env(safe-area-inset-bottom));
-  }
-  .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 999px; margin: 0 auto 16px; }
-  .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-  .modal-close { font-size: 24px; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 0; line-height: 1; }
-
-  /* ── AI Input Box ── */
-  .ai-box {
-    background: linear-gradient(135deg, var(--pink-light), #fdf0fb);
-    border: 1.5px solid #e8a0c0; border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px;
-  }
-  .ai-box-title { font-size: 13px; font-weight: 700; color: var(--pink-dark); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-  .ai-input-row { display: flex; gap: 8px; }
-  .ai-input-row .form-input { flex: 1; font-size: 13px; }
-  .ai-status { font-size: 12px; color: var(--text-muted); margin-top: 8px; min-height: 16px; display: flex; align-items: center; gap: 6px; }
-  .spinner { width: 13px; height: 13px; border: 2px solid var(--border); border-top-color: var(--pink); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .preview-box { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-top: 10px; font-size: 13px; }
-  .preview-row { display: flex; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--border); }
-  .preview-row:last-child { border-bottom: none; }
-  .preview-label { color: var(--text-muted); min-width: 76px; flex-shrink: 0; font-size: 12px; }
-  .preview-val { color: var(--text); font-weight: 600; word-break: break-all; font-size: 12px; }
-  .confirm-btns { display: flex; gap: 8px; margin-top: 12px; }
-  .confirm-btns .btn { flex: 1; justify-content: center; }
-
-  /* ── Event Card ── */
-  .ev-row { display: flex; gap: 10px; align-items: flex-start; }
-  .ev-date { background: var(--pink-light); border-radius: var(--radius-sm); padding: 8px 10px; text-align: center; min-width: 44px; flex-shrink: 0; }
-  .ev-month { font-size: 9px; color: var(--pink); font-weight: 700; }
-  .ev-day { font-size: 20px; font-weight: 800; color: var(--pink-dark); line-height: 1; }
-  .ev-info { flex: 1; min-width: 0; }
-  .ev-name { font-size: 14px; font-weight: 700; margin-bottom: 5px; }
-  .ev-meta { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
-
-  /* ── Avatar ── */
-  .avatar { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
-  .av-A { background: var(--pink-light); color: var(--pink-dark); }
-  .av-B { background: var(--blue-light); color: var(--blue); }
-  .av-C { background: var(--green-light); color: var(--green); }
-
-  /* ── Progress ── */
-  .progress { height: 5px; background: var(--gray-light); border-radius: 999px; overflow: hidden; }
-  .progress-fill { height: 100%; border-radius: 999px; background: var(--pink); }
-
-  /* ── Balance ── */
-  .balance-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
-  .bal { text-align: center; background: var(--gray-light); border-radius: var(--radius-sm); padding: 10px 6px; }
-  .bal-name { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
-  .bal-val { font-size: 15px; font-weight: 700; }
-  .pos { color: var(--green); }
-  .neg { color: var(--red); }
-  .zero { color: var(--text-muted); }
-
-  /* ── Filter Chips ── */
-  .chip-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
-  .chip { padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border); cursor: pointer; font-size: 12px; font-weight: 600; background: var(--white); color: var(--text-muted); white-space: nowrap; }
-  .chip.on { background: var(--pink); color: var(--white); border-color: var(--pink); }
-
-  /* ── Empty ── */
-  .empty { text-align: center; padding: 32px 20px; color: var(--text-muted); font-size: 13px; }
-  .empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.4; }
-
-  /* ── Alert box ── */
-  .alert-deadline { background: var(--red-light); border: 1px solid #fecaca; border-radius: var(--radius); padding: 12px 14px; margin-bottom: 12px; }
-  .alert-deadline-title { font-size: 12px; font-weight: 700; color: var(--red); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
-  .alert-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
-  .alert-row + .alert-row { border-top: 1px solid #fecaca; }
-  .alert-text { flex: 1; font-size: 12px; }
-  .alert-days { font-size: 11px; font-weight: 700; color: var(--red); }
-
-  /* ── Settings ── */
-  .settings-section { margin-bottom: 20px; }
-  .settings-title { font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 10px; }
-  .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-  .settings-val { font-size: 12px; color: var(--text-muted); max-width: 60%; text-align: right; word-break: break-all; }
-
-  /* ── Setup Guide ── */
-  .setup-step { display: flex; gap: 12px; margin-bottom: 14px; }
-  .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--pink); color: #fff; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
-  .step-content { flex: 1; }
-  .step-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-  .step-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
-  .step-desc a { color: var(--blue); }
-  .step-input { margin-top: 8px; }
-  .setup-done { background: var(--green-light); border: 1px solid #86efac; border-radius: var(--radius); padding: 14px; text-align: center; display: none; }
-  .setup-done.show { display: block; }
+:root{--pink:#c94b7b;--pink-light:#fbeaf0;--pink-dark:#8b2d55;--blue:#2563a8;--blue-light:#e8f0fb;--green:#2a7a4b;--green-light:#e8f5ee;--amber:#92520a;--amber-light:#fdf0dc;--red:#b91c1c;--red-light:#fef2f2;--gray:#64748b;--gray-light:#f8fafc;--border:#e2e8f0;--text:#1e293b;--text-muted:#64748b;--white:#ffffff;--radius:12px;--radius-sm:8px;--nav-h:64px;--header-h:56px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:'Hiragino Sans','Noto Sans JP',sans-serif;background:var(--gray-light);color:var(--text);font-size:15px}
+.header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;z-index:100}
+.header-logo{width:34px;height:34px;border-radius:50%;background:var(--pink-light);display:flex;align-items:center;justify-content:center;font-size:18px}
+.header-text{flex:1}
+.header-title{font-size:15px;font-weight:700;color:var(--text)}
+.header-sub{font-size:11px;color:var(--text-muted)}
+.header-alert{background:var(--red-light);color:var(--red);font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;display:none;align-items:center;gap:4px;cursor:pointer;border:none}
+.header-alert.show{display:flex}
+.nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:var(--white);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--text-muted);font-size:10px;font-weight:500;padding:8px 2px;border:none;background:none}
+.nav-item.on{color:var(--pink)}
+.nav-item svg{width:22px;height:22px;stroke-width:1.8}
+.scroll-area{position:fixed;top:var(--header-h);bottom:var(--nav-h);left:0;right:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px calc(14px + env(safe-area-inset-bottom))}
+.panel{display:none}.panel.on{display:block}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.stat-label{font-size:11px;color:var(--text-muted);margin-bottom:4px}
+.stat-val{font-size:22px;font-weight:700;color:var(--text)}
+.stat-sub{font-size:11px;color:var(--text-muted);margin-top:2px}
+.sec-title{font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.6px;text-transform:uppercase;margin:14px 0 8px}
+.tag{font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
+.tag-pink{background:var(--pink-light);color:var(--pink-dark)}
+.tag-blue{background:var(--blue-light);color:var(--blue)}
+.tag-amber{background:var(--amber-light);color:var(--amber)}
+.tag-green{background:var(--green-light);color:var(--green)}
+.tag-red{background:var(--red-light);color:var(--red)}
+.tag-gray{background:var(--gray-light);color:var(--gray);border:1px solid var(--border)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text);-webkit-appearance:none;font-family:inherit}
+.btn:active{opacity:0.7}
+.btn-pink{background:var(--pink);color:#fff;border-color:var(--pink)}
+.btn-blue{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-danger{background:var(--red-light);color:var(--red);border-color:#fecaca}
+.btn-full{width:100%;justify-content:center}
+.btn:disabled{opacity:0.4}
+.form-group{margin-bottom:12px}
+.form-label{font-size:12px;color:var(--text-muted);font-weight:600;display:block;margin-bottom:5px}
+.form-input,.form-select,.form-textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;color:var(--text);background:var(--white);-webkit-appearance:none;appearance:none;font-family:inherit}
+.form-textarea{resize:vertical;min-height:70px}
+.form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--pink)}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.checkbox-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.checkbox-item{display:flex;align-items:center;gap:5px;font-size:13px}
+.checkbox-item input[type=checkbox]{width:17px;height:17px;accent-color:var(--pink)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+.modal-bg.show{display:flex}
+.modal{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;padding:20px 16px;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:999px;margin:0 auto 16px}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{font-size:24px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:0;line-height:1}
+.ai-box{background:linear-gradient(135deg,var(--pink-light),#fdf0fb);border:1.5px solid #e8a0c0;border-radius:var(--radius);padding:14px 16px;margin-bottom:14px}
+.ai-box-title{font-size:13px;font-weight:700;color:var(--pink-dark);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ai-input-row{display:flex;gap:8px}
+.ai-input-row .form-input{flex:1;font-size:13px}
+.ai-status{font-size:12px;color:var(--text-muted);margin-top:8px;min-height:16px;display:flex;align-items:center;gap:6px}
+.spinner{width:13px;height:13px;border:2px solid var(--border);border-top-color:var(--pink);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.preview-box{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-top:10px}
+.preview-row{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
+.preview-row:last-child{border-bottom:none}
+.preview-label{color:var(--text-muted);min-width:76px;flex-shrink:0;font-size:12px}
+.preview-val{color:var(--text);font-weight:600;word-break:break-all;font-size:12px}
+.confirm-btns{display:flex;gap:8px;margin-top:12px}
+.confirm-btns .btn{flex:1;justify-content:center}
+.ev-row{display:flex;gap:10px;align-items:flex-start}
+.ev-date{background:var(--pink-light);border-radius:var(--radius-sm);padding:8px 10px;text-align:center;min-width:44px;flex-shrink:0}
+.ev-month{font-size:9px;color:var(--pink);font-weight:700}
+.ev-day{font-size:20px;font-weight:800;color:var(--pink-dark);line-height:1}
+.ev-info{flex:1;min-width:0}
+.ev-name{font-size:14px;font-weight:700;margin-bottom:5px}
+.ev-meta{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+.progress{height:5px;background:var(--gray-light);border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;border-radius:999px;background:var(--pink)}
+.balance-grid{display:grid;gap:8px;margin-top:12px}
+.bal{text-align:center;background:var(--gray-light);border-radius:var(--radius-sm);padding:10px 6px}
+.bal-name{font-size:11px;color:var(--text-muted);margin-bottom:3px}
+.bal-val{font-size:15px;font-weight:700}
+.pos{color:var(--green)}.neg{color:var(--red)}.zero{color:var(--text-muted)}
+.chip-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{padding:6px 14px;border-radius:999px;border:1px solid var(--border);cursor:pointer;font-size:12px;font-weight:600;background:var(--white);color:var(--text-muted);white-space:nowrap}
+.chip.on{background:var(--pink);color:var(--white);border-color:var(--pink)}
+.empty{text-align:center;padding:32px 20px;color:var(--text-muted);font-size:13px}
+.empty-icon{font-size:36px;margin-bottom:10px;opacity:0.4}
+.alert-deadline{background:var(--red-light);border:1px solid #fecaca;border-radius:var(--radius);padding:12px 14px;margin-bottom:12px}
+.alert-deadline-title{font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px}
+.alert-row{display:flex;align-items:center;gap:8px;padding:5px 0}
+.alert-row+.alert-row{border-top:1px solid #fecaca}
+.alert-text{flex:1;font-size:12px}
+.alert-days{font-size:11px;font-weight:700;color:var(--red)}
+/* カレンダー */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:8px}
+.cal-head{text-align:center;font-size:10px;font-weight:600;color:var(--text-muted);padding:4px 0}
+.cal-head:first-child{color:var(--red)}
+.cal-head:last-child{color:var(--blue)}
+.cal-day{min-height:36px;border-radius:6px;padding:3px;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center}
+.cal-day:hover{background:var(--gray-light)}
+.cal-day.today .cal-num{background:var(--pink);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.cal-day.other-month .cal-num{color:var(--border)}
+.cal-num{font-size:12px;font-weight:600;color:var(--text);line-height:22px;width:22px;text-align:center}
+.cal-dot{width:5px;height:5px;border-radius:50%;background:var(--pink);margin-top:2px}
+.cal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.cal-nav button{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);padding:4px 10px}
+.cal-month-label{font-size:15px;font-weight:700}
+/* メンバー設定 */
+.member-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.member-row .form-input{flex:1}
+.color-pick{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.color-swatch{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent}
+.color-swatch.on{border-color:var(--text)}
+/* ワリカインポート */
+.import-box{background:var(--blue-light);border:1.5px solid #93c5fd;border-radius:var(--radius);padding:14px 16px;margin-bottom:14px}
+.import-box-title{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:8px}
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <div class="header">
   <div class="header-logo">⭐</div>
   <div class="header-text">
     <div class="header-title">推し活マネージャー</div>
-    <div class="header-sub">高嶺のなでしこ</div>
+    <div class="header-sub" id="headerSub">高嶺のなでしこ</div>
   </div>
-  <button class="header-alert" id="alertBadge" onclick="openModal('alertModal')">
-    🔔 <span id="alertCount">0</span>件
-  </button>
+  <button class="header-alert" id="alertBadge" onclick="openModal('alertModal')">🔔 <span id="alertCount">0</span>件</button>
 </div>
 
-<!-- Scroll Area -->
 <div class="scroll-area">
 
-  <!-- ▼ ダッシュボード -->
+  <!-- ダッシュボード -->
   <div class="panel on" id="panel-dash">
     <div class="ai-box">
       <div class="ai-box-title">🐦 ツイートURLから自動登録</div>
@@ -267,7 +166,7 @@
     <div id="dashEvents"></div>
   </div>
 
-  <!-- ▼ イベント -->
+  <!-- イベント（カレンダー＋リスト） -->
   <div class="panel" id="panel-events">
     <div class="ai-box">
       <div class="ai-box-title">🐦 ツイートURLから追加</div>
@@ -284,6 +183,15 @@
         </div>
       </div>
     </div>
+    <!-- カレンダー -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="cal-nav">
+        <button onclick="calPrev()">‹</button>
+        <div class="cal-month-label" id="calLabel"></div>
+        <button onclick="calNext()">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <div class="chip-row" style="margin-bottom:0;flex:1" id="evFilter">
         <div class="chip on" data-filter="all">すべて</div>
@@ -292,34 +200,48 @@
         <div class="chip" data-filter="リリイベ">リリイベ</div>
         <div class="chip" data-filter="その他">その他</div>
       </div>
-      <button class="btn btn-sm" style="flex-shrink:0;margin-left:8px" onclick="openModal('evModal')">＋ 手動</button>
+      <button class="btn btn-sm" style="flex-shrink:0;margin-left:8px" onclick="openEvModal()">＋ 手動</button>
     </div>
     <div id="evList"></div>
   </div>
 
-  <!-- ▼ チケット -->
+  <!-- チケット -->
   <div class="panel" id="panel-tickets">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
       <div style="font-size:13px;color:var(--text-muted)">チケット・部数の管理</div>
-      <button class="btn btn-pink btn-sm" onclick="openModal('tkModal')">＋ 追加</button>
+      <button class="btn btn-pink btn-sm" onclick="openTkModal()">＋ 追加</button>
     </div>
     <div id="tkList"></div>
   </div>
 
-  <!-- ▼ ワリカン -->
+  <!-- ワリカン -->
   <div class="panel" id="panel-warikan">
+    <div class="import-box">
+      <div class="import-box-title">📥 ワリカから過去データを取り込む</div>
+      <div style="font-size:12px;color:var(--blue);margin-bottom:10px;line-height:1.7">
+        ワリカの詳細ページを開いて、画面のテキストを全部コピーして下に貼り付けてください。<br>
+        <span style="color:var(--text-muted)">グループ名も一緒に貼ると自動でイベント名に使われます。</span>
+      </div>
+      <textarea class="form-textarea" id="wkPasteText" placeholder="ここにワリカの画面テキストを貼り付け&#10;&#10;例：&#10;福岡エアビ&#10;はや10が立て替え (01/18)  ¥6,400&#10;&#10;エアビー代&#10;じゅんじゅんが立て替え (12/30)  ¥55,700" style="min-height:110px;font-size:12px;margin-bottom:8px"></textarea>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div><div class="form-label">グループ名（任意）</div><input class="form-input" id="wkImportGroup" placeholder="例：福岡ツアー"></div>
+        <div><div class="form-label">年（省略時は今年）</div><input class="form-input" id="wkImportYear" placeholder="例：2024" type="number"></div>
+      </div>
+      <button class="btn btn-blue btn-sm" onclick="importWarikanText()">📥 取り込む</button>
+      <div id="importStatus" style="font-size:12px;margin-top:8px;color:var(--text-muted)"></div>
+    </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
       <div style="font-size:13px;color:var(--text-muted)">ワリカ方式で自動精算</div>
-      <button class="btn btn-pink btn-sm" onclick="openModal('wkModal')">＋ 追加</button>
+      <button class="btn btn-pink btn-sm" onclick="openWkModal()">＋ 追加</button>
     </div>
     <div id="wkList"></div>
   </div>
 
-  <!-- ▼ ドライブ -->
+  <!-- ドライブ -->
   <div class="panel" id="panel-drive">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
       <div style="font-size:13px;color:var(--text-muted)">運転記録・走行距離管理</div>
-      <button class="btn btn-pink btn-sm" onclick="openModal('dvModal')">＋ 記録</button>
+      <button class="btn btn-pink btn-sm" onclick="openDvModal()">＋ 記録</button>
     </div>
     <div class="stat-grid" id="dvStats"></div>
     <div class="sec-title">ドライバー別</div>
@@ -328,114 +250,47 @@
     <div id="dvHistory"></div>
   </div>
 
-  <!-- ▼ 設定 -->
+  <!-- 設定 -->
   <div class="panel" id="panel-settings">
-    <div class="settings-section">
-      <div class="settings-title">🔗 Googleスプレッドシート連携</div>
-      <div class="card">
-        <div id="setupGuide">
-          <div style="font-size:13px;color:var(--text-muted);margin-bottom:14px;line-height:1.7">
-            データをGoogleスプレッドシートに保存します。設定は初回1回だけです。
-          </div>
-          <div class="setup-step">
-            <div class="step-num">1</div>
-            <div class="step-content">
-              <div class="step-title">スプレッドシートを作成</div>
-              <div class="step-desc">
-                <a href="https://sheets.new" target="_blank">sheets.new</a> を開いて新しいスプレッドシートを作成してください。
-              </div>
-            </div>
-          </div>
-          <div class="setup-step">
-            <div class="step-num">2</div>
-            <div class="step-content">
-              <div class="step-title">Apps Script を開く</div>
-              <div class="step-desc">
-                スプレッドシートのメニューから「拡張機能」→「Apps Script」を開きます。
-              </div>
-            </div>
-          </div>
-          <div class="setup-step">
-            <div class="step-num">3</div>
-            <div class="step-content">
-              <div class="step-title">スクリプトを貼り付け</div>
-              <div class="step-desc">
-                コードエディタの内容を全部消して、下のコードを貼り付けて保存（Ctrl+S）してください。
-              </div>
-              <div style="margin-top:8px">
-                <button class="btn btn-sm" onclick="copyGasCode()">📋 スクリプトをコピー</button>
-                <div id="gasCopyDone" style="display:none;color:var(--green);font-size:12px;margin-top:4px">✓ コピーしました！</div>
-              </div>
-            </div>
-          </div>
-          <div class="setup-step">
-            <div class="step-num">4</div>
-            <div class="step-content">
-              <div class="step-title">デプロイして URL を取得</div>
-              <div class="step-desc">
-                Apps Script の「デプロイ」→「新しいデプロイ」→種類「ウェブアプリ」→アクセス「全員」→「デプロイ」。表示されたURLをコピーしてください。
-              </div>
-            </div>
-          </div>
-          <div class="setup-step">
-            <div class="step-num">5</div>
-            <div class="step-content">
-              <div class="step-title">URLを登録</div>
-              <div class="step-desc">取得したウェブアプリURLを下に貼り付けてください。</div>
-              <div class="step-input">
-                <input class="form-input" id="gasUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:12px">
-                <button class="btn btn-pink btn-full" style="margin-top:8px" onclick="saveGasUrl()">✓ 連携を開始する</button>
-              </div>
-            </div>
-          </div>
-          <div class="setup-done" id="setupDone">
-            <div style="font-size:20px;margin-bottom:6px">✅</div>
-            <div style="font-weight:700;font-size:14px;color:var(--green)">連携完了！</div>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">データはGoogleスプレッドシートに自動保存されます</div>
-          </div>
-        </div>
+
+    <div class="sec-title">👥 メンバー管理</div>
+    <div class="card">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px">名前・色を変更したり、メンバーを追加できます（最大6人）</div>
+      <div id="memberEditList"></div>
+      <button class="btn btn-sm" onclick="addMemberRow()" style="margin-top:8px">＋ メンバーを追加</button>
+      <button class="btn btn-pink btn-full" style="margin-top:12px" onclick="saveMembers()">✓ メンバーを保存</button>
+    </div>
+
+    <div class="sec-title">🔗 Googleスプレッドシート連携</div>
+    <div class="card">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.7">GASのウェブアプリURLを登録するとデータが自動保存・3人共有されます。</div>
+      <div class="form-group"><div class="form-label">ウェブアプリURL</div><input class="form-input" id="gasUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:12px"></div>
+      <button class="btn btn-pink btn-full" onclick="saveGasUrl()">✓ 連携を開始する</button>
+      <div id="gasStatus" style="font-size:12px;color:var(--green);margin-top:8px;display:none">✅ 連携済み</div>
+      <div style="margin-top:12px">
+        <button class="btn btn-sm" onclick="copyGasCode()">📋 GASスクリプトをコピー</button>
+        <div id="gasCopyDone" style="display:none;color:var(--green);font-size:12px;margin-top:4px">✓ コピーしました！</div>
       </div>
     </div>
 
-    <div class="settings-section">
-      <div class="settings-title">👥 メンバー名設定</div>
-      <div class="card">
-        <div class="form-group"><div class="form-label">メンバー1（A）</div><input class="form-input" id="cfg_a" placeholder="例：たろう"></div>
-        <div class="form-group"><div class="form-label">メンバー2（B）</div><input class="form-input" id="cfg_b" placeholder="例：はなこ"></div>
-        <div class="form-group" style="margin-bottom:0"><div class="form-label">メンバー3（C）</div><input class="form-input" id="cfg_c" placeholder="例：じろう"></div>
-        <button class="btn btn-pink btn-full" style="margin-top:12px" onclick="saveNames()">保存</button>
-      </div>
+    <div class="sec-title">🔑 Claude APIキー</div>
+    <div class="card">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.6">ツイート自動解析に使います。<a href="https://console.anthropic.com" target="_blank" style="color:var(--blue)">console.anthropic.com</a> で取得してください。</div>
+      <div class="form-group"><div class="form-label">APIキー</div><input class="form-input" id="cfg_api" type="password" placeholder="sk-ant-..."></div>
+      <button class="btn btn-pink btn-full" onclick="saveApiKey()">保存</button>
     </div>
 
-    <div class="settings-section">
-      <div class="settings-title">🔑 Claude API キー</div>
-      <div class="card">
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.6">
-          ツイート自動解析に使います。<a href="https://console.anthropic.com" target="_blank" style="color:var(--blue)">console.anthropic.com</a> でAPIキーを取得してください（無料枠あり）。
-        </div>
-        <div class="form-group"><div class="form-label">APIキー</div><input class="form-input" id="cfg_api" type="password" placeholder="sk-ant-..."></div>
-        <button class="btn btn-pink btn-full" onclick="saveApiKey()">保存</button>
-      </div>
+    <div class="sec-title">📱 ホーム画面への追加</div>
+    <div class="card" style="font-size:13px;line-height:1.8;color:var(--text-muted)">
+      <b style="color:var(--text)">iPhone（Safari）</b><br>共有ボタン →「ホーム画面に追加」<br><br>
+      <b style="color:var(--text)">Android（Chrome）</b><br>3点メニュー →「ホーム画面に追加」
     </div>
 
-    <div class="settings-section">
-      <div class="settings-title">📱 ホーム画面への追加</div>
-      <div class="card" style="font-size:13px;line-height:1.8;color:var(--text-muted)">
-        <b style="color:var(--text)">iPhone（Safari）</b><br>
-        画面下の共有ボタン → 「ホーム画面に追加」<br><br>
-        <b style="color:var(--text)">Android（Chrome）</b><br>
-        右上の3点メニュー → 「ホーム画面に追加」
-      </div>
-    </div>
-
-    <div style="text-align:center;padding:10px;font-size:11px;color:var(--text-muted)">
-      推し活マネージャー v2.0 ｜ データはGoogleスプレッドシートに保存
-    </div>
+    <div style="text-align:center;padding:10px;font-size:11px;color:var(--text-muted)">推し活マネージャー v3.0</div>
   </div>
 
-</div><!-- /scroll-area -->
+</div>
 
-<!-- ── Bottom Navigation ── -->
 <nav class="nav">
   <button class="nav-item on" data-tab="dash" onclick="switchTab('dash',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
@@ -443,18 +298,18 @@
   </button>
   <button class="nav-item" data-tab="events" onclick="switchTab('events',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-    イベント
+    カレンダー
   </button>
   <button class="nav-item" data-tab="tickets" onclick="switchTab('tickets',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v14M9 9h1M9 12h1M9 15h1"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg>
     チケット
   </button>
   <button class="nav-item" data-tab="warikan" onclick="switchTab('warikan',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/><path d="M8 14h8"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 14h8M12 10v8"/></svg>
     ワリカン
   </button>
   <button class="nav-item" data-tab="drive" onclick="switchTab('drive',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 17H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M9 12l2-5 2 5"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 17H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
     ドライブ
   </button>
   <button class="nav-item" data-tab="settings" onclick="switchTab('settings',this)">
@@ -463,21 +318,15 @@
   </button>
 </nav>
 
-<!-- ── Modals ── -->
-
-<!-- アラート -->
+<!-- モーダル群 -->
 <div class="modal-bg" id="alertModal">
-<div class="modal">
-  <div class="modal-handle"></div>
+<div class="modal"><div class="modal-handle"></div>
   <div class="modal-title">🔔 締切アラート<button class="modal-close" onclick="closeModal('alertModal')">×</button></div>
   <div id="alertList"></div>
-</div>
-</div>
+</div></div>
 
-<!-- イベント手動追加 -->
 <div class="modal-bg" id="evModal">
-<div class="modal">
-  <div class="modal-handle"></div>
+<div class="modal"><div class="modal-handle"></div>
   <div class="modal-title">イベント追加<button class="modal-close" onclick="closeModal('evModal')">×</button></div>
   <div class="form-group"><div class="form-label">イベント名 *</div><input class="form-input" id="ev_name" placeholder="例：名古屋ワンマンライブ"></div>
   <div class="form-row2">
@@ -487,329 +336,420 @@
     </div>
   </div>
   <div class="form-group"><div class="form-label">会場</div><input class="form-input" id="ev_venue" placeholder="例：名古屋 ボトムライン"></div>
-  <div class="form-group"><div class="form-label">おすすめ駐車場</div><input class="form-input" id="ev_parking" placeholder="例：コインパーク北"></div>
+  <div class="form-group"><div class="form-label">おすすめ駐車場</div><input class="form-input" id="ev_parking"></div>
   <div class="form-row2">
     <div class="form-group"><div class="form-label">購入サイト</div><input class="form-input" id="ev_site" placeholder="eplus"></div>
     <div class="form-group"><div class="form-label">チケットURL</div><input class="form-input" id="ev_url" placeholder="https://..."></div>
   </div>
   <div class="form-group"><div class="form-label">応募/購入 締切</div><input type="datetime-local" class="form-input" id="ev_deadline"></div>
   <div class="form-group"><div class="form-label">支払締切</div><input type="datetime-local" class="form-input" id="ev_pay_deadline"></div>
-  <div class="form-group"><div class="form-label">参加メンバー</div>
-    <div class="checkbox-row" id="ev_members_row"></div>
-  </div>
-  <div class="form-group"><div class="form-label">運転担当</div>
-    <select class="form-select" id="ev_driver"><option value="">未定</option></select>
-  </div>
-  <div class="form-group"><div class="form-label">メモ・公式ツイートURL</div><textarea class="form-textarea" id="ev_note"></textarea></div>
+  <div class="form-group"><div class="form-label">参加メンバー</div><div class="checkbox-row" id="ev_members_row"></div></div>
+  <div class="form-group"><div class="form-label">運転担当</div><select class="form-select" id="ev_driver"></select></div>
+  <div class="form-group"><div class="form-label">メモ・ツイートURL</div><textarea class="form-textarea" id="ev_note"></textarea></div>
   <div style="display:flex;gap:8px">
     <button class="btn" style="flex:1;justify-content:center" onclick="closeModal('evModal')">キャンセル</button>
     <button class="btn btn-pink" style="flex:2;justify-content:center" onclick="saveEvent()">✓ 保存</button>
   </div>
-</div>
-</div>
+</div></div>
 
-<!-- チケット追加 -->
 <div class="modal-bg" id="tkModal">
-<div class="modal">
-  <div class="modal-handle"></div>
+<div class="modal"><div class="modal-handle"></div>
   <div class="modal-title">チケット追加<button class="modal-close" onclick="closeModal('tkModal')">×</button></div>
-  <div class="form-group"><div class="form-label">イベント</div><select class="form-select" id="tk_event"><option value="">選択してください</option></select></div>
+  <div class="form-group"><div class="form-label">イベント</div><select class="form-select" id="tk_event"></select></div>
   <div class="form-group"><div class="form-label">種別</div>
     <select class="form-select" id="tk_type"><option>ライブチケット</option><option>特典会部数</option><option>CD/グッズ</option><option>その他</option></select>
   </div>
-  <div class="form-group"><div class="form-label">購入サイト</div><input class="form-input" id="tk_site" placeholder="例：eplus"></div>
-  <div class="form-row3" id="tk_members_row"></div>
+  <div class="form-group"><div class="form-label">購入サイト</div><input class="form-input" id="tk_site"></div>
+  <div class="form-group"><div class="form-label">各自の枚数/部数</div><div id="tk_members_inputs"></div></div>
   <div class="form-row2">
     <div class="form-group"><div class="form-label">単価（円）</div><input type="number" class="form-input" id="tk_price" placeholder="5500"></div>
-    <div class="form-group"><div class="form-label">方式</div>
-      <select class="form-select" id="tk_method"><option>抽選</option><option>先着</option><option>一般</option></select>
-    </div>
+    <div class="form-group"><div class="form-label">方式</div><select class="form-select" id="tk_method"><option>抽選</option><option>先着</option><option>一般</option></select></div>
   </div>
   <div class="form-group"><div class="form-label">メモ</div><input class="form-input" id="tk_note"></div>
   <div style="display:flex;gap:8px">
     <button class="btn" style="flex:1;justify-content:center" onclick="closeModal('tkModal')">キャンセル</button>
     <button class="btn btn-pink" style="flex:2;justify-content:center" onclick="saveTicket()">✓ 保存</button>
   </div>
-</div>
-</div>
+</div></div>
 
-<!-- ワリカン追加 -->
 <div class="modal-bg" id="wkModal">
-<div class="modal">
-  <div class="modal-handle"></div>
+<div class="modal"><div class="modal-handle"></div>
   <div class="modal-title">支出を追加<button class="modal-close" onclick="closeModal('wkModal')">×</button></div>
   <div class="form-group"><div class="form-label">内容 *</div><input class="form-input" id="wk_name" placeholder="例：名古屋ライブ チケット代"></div>
   <div class="form-group"><div class="form-label">支払った人</div><select class="form-select" id="wk_payer"></select></div>
   <div class="form-group"><div class="form-label">金額（円） *</div><input type="number" class="form-input" id="wk_amount" placeholder="22000"></div>
   <div class="form-group"><div class="form-label">割り勘対象</div><div class="checkbox-row" id="wk_targets_row"></div></div>
   <div class="form-group"><div class="form-label">日付</div><input type="date" class="form-input" id="wk_date"></div>
-  <div class="form-group"><div class="form-label">メモ</div><input class="form-input" id="wk_note" placeholder="立替など"></div>
+  <div class="form-group"><div class="form-label">メモ</div><input class="form-input" id="wk_note"></div>
   <div style="display:flex;gap:8px">
     <button class="btn" style="flex:1;justify-content:center" onclick="closeModal('wkModal')">キャンセル</button>
     <button class="btn btn-pink" style="flex:2;justify-content:center" onclick="saveWarikan()">✓ 保存</button>
   </div>
-</div>
-</div>
+</div></div>
 
-<!-- ドライブ記録 -->
 <div class="modal-bg" id="dvModal">
-<div class="modal">
-  <div class="modal-handle"></div>
+<div class="modal"><div class="modal-handle"></div>
   <div class="modal-title">運転記録<button class="modal-close" onclick="closeModal('dvModal')">×</button></div>
-  <div class="form-group"><div class="form-label">イベント</div><select class="form-select" id="dv_event"><option value="">選択</option></select></div>
+  <div class="form-group"><div class="form-label">イベント</div><select class="form-select" id="dv_event"></select></div>
   <div class="form-group"><div class="form-label">ドライバー</div><select class="form-select" id="dv_driver"></select></div>
   <div class="form-row2">
     <div class="form-group"><div class="form-label">走行距離（km） *</div><input type="number" class="form-input" id="dv_km" placeholder="120"></div>
     <div class="form-group"><div class="form-label">日付</div><input type="date" class="form-input" id="dv_date"></div>
   </div>
   <div class="form-row2">
-    <div class="form-group"><div class="form-label">ガソリン代（円）</div><input type="number" class="form-input" id="dv_gas" placeholder="3000"></div>
-    <div class="form-group"><div class="form-label">高速代（円）</div><input type="number" class="form-input" id="dv_toll" placeholder="0"></div>
+    <div class="form-group"><div class="form-label">ガソリン代（円）</div><input type="number" class="form-input" id="dv_gas"></div>
+    <div class="form-group"><div class="form-label">高速代（円）</div><input type="number" class="form-input" id="dv_toll"></div>
   </div>
   <div class="form-group"><div class="form-label">メモ</div><input class="form-input" id="dv_note"></div>
   <div style="display:flex;gap:8px">
     <button class="btn" style="flex:1;justify-content:center" onclick="closeModal('dvModal')">キャンセル</button>
     <button class="btn btn-pink" style="flex:2;justify-content:center" onclick="saveDrive()">✓ 保存</button>
   </div>
-</div>
-</div>
+</div></div>
+
+<!-- カレンダーイベント詳細 -->
+<div class="modal-bg" id="calDetailModal">
+<div class="modal"><div class="modal-handle"></div>
+  <div class="modal-title" id="calDetailTitle">イベント詳細<button class="modal-close" onclick="closeModal('calDetailModal')">×</button></div>
+  <div id="calDetailContent"></div>
+</div></div>
 
 <script>
-// ── 設定・ストレージ ──
-const LKEY = 'oshi_cfg_v2';
-let cfg = { gasUrl:'', apiKey:'', names:['Aさん','Bさん','Cさん'] };
-let db = { events:[], tickets:[], warikan:[], drives:[] };
-let pendingEvent = null;
+const LKEY='oshi_cfg_v3';
+const MEMBER_COLORS=['#c94b7b','#2563a8','#2a7a4b','#92520a','#7c3aed','#0891b2','#d97706','#dc2626','#0ea5e9','#ca8a04'];
+const MEMBER_BG=['#fbeaf0','#e8f0fb','#e8f5ee','#fdf0dc','#ede9fe','#e0f2fe','#fff7ed','#fef2f2','#e0f7ff','#fefce8'];
+
+let cfg={
+  gasUrl:'',apiKey:'',
+  members:[
+    {id:'0',name:'角田',color:'#c94b7b',bg:'#fbeaf0'},
+    {id:'1',name:'福田',color:'#2563a8',bg:'#e8f0fb'},
+    {id:'2',name:'太田',color:'#2a7a4b',bg:'#e8f5ee'}
+  ]
+};
+let db={events:[],tickets:[],warikan:[],drives:[]};
+let pendingEvent=null;
+let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
 
 function loadCfg(){
-  try { const s = localStorage.getItem(LKEY); if(s) cfg = {...cfg,...JSON.parse(s)}; } catch(e){}
+  try{const s=localStorage.getItem(LKEY);if(s){const c=JSON.parse(s);cfg={...cfg,...c};}}catch(e){}
 }
-function saveCfg(){
-  localStorage.setItem(LKEY, JSON.stringify(cfg));
-}
-function M(i){ return cfg.names[i] || ['Aさん','Bさん','Cさん'][i]; }
-const MID = ['A','B','C'];
+function saveCfg(){localStorage.setItem(LKEY,JSON.stringify(cfg));}
 
-// ── GAS API ──
-async function gasRequest(action, payload={}){
-  if(!cfg.gasUrl) throw new Error('GAS URLが未設定です。設定タブから連携してください。');
-  const params = new URLSearchParams({ action, data: JSON.stringify(payload) });
-  const res = await fetch(cfg.gasUrl + '?' + params);
-  if(!res.ok) throw new Error('通信エラー: ' + res.status);
-  return await res.json();
-}
+// メンバー取得ヘルパー
+const mName=id=>cfg.members.find(m=>m.id===id)?.name||id;
+const mColor=id=>cfg.members.find(m=>m.id===id)?.color||'#888';
+const mBg=id=>cfg.members.find(m=>m.id===id)?.bg||'#eee';
 
+// GAS
+async function gasRequest(action,payload={}){
+  if(!cfg.gasUrl)throw new Error('GAS URL未設定');
+  const p=new URLSearchParams({action,data:JSON.stringify(payload)});
+  const r=await fetch(cfg.gasUrl+'?'+p);
+  if(!r.ok)throw new Error('通信エラー');
+  return await r.json();
+}
 async function loadFromGas(){
-  if(!cfg.gasUrl){ loadLocalFallback(); return; }
-  try {
-    const r = await gasRequest('load');
-    if(r.ok && r.data) db = { events:[], tickets:[], warikan:[], drives:[], ...r.data };
-  } catch(e){ loadLocalFallback(); }
+  if(!cfg.gasUrl){loadLocal();return;}
+  try{const r=await gasRequest('load');if(r.ok&&r.data)db={events:[],tickets:[],warikan:[],drives:[],...r.data};}
+  catch(e){loadLocal();}
   render();
 }
-function loadLocalFallback(){
-  try { const s = localStorage.getItem('oshi_db_v2'); if(s) db = JSON.parse(s); } catch(e){}
-}
+function loadLocal(){try{const s=localStorage.getItem('oshi_db_v3');if(s)db=JSON.parse(s);}catch(e){}}
 async function saveData(){
-  try {
-    if(cfg.gasUrl) await gasRequest('save', db);
-    else localStorage.setItem('oshi_db_v2', JSON.stringify(db));
-  } catch(e){ localStorage.setItem('oshi_db_v2', JSON.stringify(db)); }
+  try{if(cfg.gasUrl)await gasRequest('save',db);else localStorage.setItem('oshi_db_v3',JSON.stringify(db));}
+  catch(e){localStorage.setItem('oshi_db_v3',JSON.stringify(db));}
 }
 
-// ── ユーティリティ ──
-const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
-const fmtYen = n => '¥' + Math.round(n).toLocaleString();
-const fmtDate = s => { if(!s) return ''; const d=new Date(s); return isNaN(d)?s:`${d.getMonth()+1}/${d.getDate()}`; };
-const fmtMon = s => { if(!s) return '--'; const d=new Date(s); return isNaN(d)?'':d.getMonth()+1+'月'; };
-const fmtDay = s => { if(!s) return '--'; const d=new Date(s); return isNaN(d)?'':d.getDate(); };
-const daysUntil = s => { if(!s) return null; return Math.ceil((new Date(s)-new Date())/86400000); };
-const urgency = s => { const d=daysUntil(s); if(d===null)return null; if(d<0)return'expired'; if(d===0)return'today'; if(d<=3)return'soon'; return'ok'; };
+// ユーティリティ
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const fmtYen=n=>'¥'+Math.round(n).toLocaleString();
+const fmtDate=s=>{if(!s)return'';const d=new Date(s);return isNaN(d)?s:`${d.getMonth()+1}/${d.getDate()}`;};
+const fmtMon=s=>{if(!s)return'--';const d=new Date(s);return isNaN(d)?'':d.getMonth()+1+'月';};
+const fmtDay=s=>{if(!s)return'--';const d=new Date(s);return isNaN(d)?'':d.getDate();};
+const daysUntil=s=>{if(!s)return null;return Math.ceil((new Date(s)-new Date())/86400000);};
+const urgency=s=>{const d=daysUntil(s);if(d===null)return null;if(d<0)return'expired';if(d===0)return'today';if(d<=3)return'soon';return'ok';};
 
 function getDeadlines(){
   const list=[];
   db.events.forEach(ev=>{
-    if(ev.deadline){ const d=daysUntil(ev.deadline); if(d!==null&&d>=0&&d<=3) list.push({name:ev.name,type:'応募締切',days:d}); }
-    if(ev.pay_deadline){ const d=daysUntil(ev.pay_deadline); if(d!==null&&d>=0&&d<=3) list.push({name:ev.name,type:'支払締切',days:d}); }
+    if(ev.deadline){const d=daysUntil(ev.deadline);if(d!==null&&d>=0&&d<=3)list.push({name:ev.name,type:'応募締切',days:d});}
+    if(ev.pay_deadline){const d=daysUntil(ev.pay_deadline);if(d!==null&&d>=0&&d<=3)list.push({name:ev.name,type:'支払締切',days:d});}
   });
   return list;
 }
 
-// ── 動的フォーム生成 ──
-function buildMemberCheckboxes(containerId, prefix, defaults=true){
-  const el=document.getElementById(containerId);
-  if(!el) return;
-  el.innerHTML = MID.map((id,i)=>`
-    <label class="checkbox-item">
-      <input type="checkbox" id="${prefix}_${id}" ${defaults?'checked':''}>
-      ${M(i)}
-    </label>`).join('');
+// カレンダー
+function renderCalendar(){
+  const label=document.getElementById('calLabel');
+  label.textContent=`${calYear}年 ${calMonth+1}月`;
+  const grid=document.getElementById('calGrid');
+  const days=['日','月','火','水','木','金','土'];
+  let html=days.map(d=>`<div class="cal-head">${d}</div>`).join('');
+  const first=new Date(calYear,calMonth,1).getDay();
+  const last=new Date(calYear,calMonth+1,0).getDate();
+  const today=new Date();
+  const evDates={};
+  db.events.forEach(ev=>{if(ev.date)evDates[ev.date]=(evDates[ev.date]||[]). concat(ev);});
+  for(let i=0;i<first;i++)html+=`<div class="cal-day other-month"><div class="cal-num"></div></div>`;
+  for(let d=1;d<=last;d++){
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=today.getFullYear()===calYear&&today.getMonth()===calMonth&&today.getDate()===d;
+    const hasEv=evDates[dateStr];
+    html+=`<div class="cal-day${isToday?' today':''}" onclick="calDayClick('${dateStr}')">
+      <div class="cal-num">${d}</div>
+      ${hasEv?`<div class="cal-dot"></div>`:''}
+    </div>`;
+  }
+  grid.innerHTML=html;
 }
-function buildMemberInputs(containerId, prefix){
-  const el=document.getElementById(containerId);
-  if(!el) return;
-  el.innerHTML = MID.map((id,i)=>`
-    <div class="form-group">
-      <div class="form-label">${M(i)}</div>
-      <input type="number" class="form-input" id="${prefix}_${id}" placeholder="0" min="0">
+function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
+function calDayClick(dateStr){
+  const evs=db.events.filter(e=>e.date===dateStr);
+  if(!evs.length)return;
+  const modal=document.getElementById('calDetailModal');
+  document.getElementById('calDetailTitle').textContent=`📅 ${fmtDate(dateStr)} のイベント`;
+  document.getElementById('calDetailContent').innerHTML=evs.map(e=>`
+    <div class="card" style="margin-bottom:8px">
+      <div style="font-size:14px;font-weight:700;margin-bottom:6px">${e.name}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">
+        ${typeTag(e.type)}
+        ${e.venue?`<span class="tag tag-gray">📍${e.venue}</span>`:''}
+        ${e.driver?`<span class="tag tag-amber">🚗 ${mName(e.driver)}運転</span>`:''}
+        ${e.parking?`<span class="tag tag-gray">🅿️${e.parking}</span>`:''}
+      </div>
+      ${e.deadline?`<div style="font-size:11px;color:var(--red);margin-top:6px">⏰ 応募締切 ${fmtDate(e.deadline)}</div>`:''}
+      ${e.note?`<div style="font-size:11px;color:var(--text-muted);margin-top:4px">${e.note.slice(0,80)}</div>`:''}
+    </div>`).join('');
+  modal.classList.add('show');
+}
+
+// メンバー設定UI
+function renderMemberEditList(){
+  const container=document.getElementById('memberEditList');
+  container.innerHTML=cfg.members.map((m,i)=>`
+    <div class="member-row" data-idx="${i}">
+      <div class="avatar" style="width:32px;height:32px;font-size:13px;background:${m.bg};color:${m.color};flex-shrink:0">${m.name.slice(0,1)}</div>
+      <input class="form-input" value="${m.name}" oninput="updateMemberName(${i},this.value)" placeholder="名前">
+      <button class="btn btn-danger btn-sm" onclick="removeMember(${i})" ${cfg.members.length<=1?'disabled':''}>✕</button>
+    </div>
+    <div class="color-pick" style="margin-bottom:12px;padding-left:40px">
+      ${MEMBER_COLORS.map((c,ci)=>`<div class="color-swatch${m.color===c?' on':''}" style="background:${c}" onclick="updateMemberColor(${i},${ci})"></div>`).join('')}
     </div>`).join('');
 }
-function buildMemberSelects(){
-  const payer=document.getElementById('wk_payer');
-  const driver=document.getElementById('dv_driver');
-  const evDriver=document.getElementById('ev_driver');
-  if(payer) payer.innerHTML = MID.map((id,i)=>`<option value="${id}">${M(i)}</option>`).join('');
-  if(driver) driver.innerHTML = MID.map((id,i)=>`<option value="${id}">${M(i)}</option>`).join('');
-  if(evDriver) evDriver.innerHTML = `<option value="">未定</option>` + MID.map((id,i)=>`<option value="${id}">${M(i)}</option>`).join('');
+function updateMemberName(idx,val){cfg.members[idx].name=val;renderMemberEditList();}
+function updateMemberColor(idx,ci){cfg.members[idx].color=MEMBER_COLORS[ci];cfg.members[idx].bg=MEMBER_BG[ci];renderMemberEditList();}
+function removeMember(idx){if(cfg.members.length<=1)return;cfg.members.splice(idx,1);renderMemberEditList();}
+function addMemberRow(){
+  if(cfg.members.length>=6)return alert('メンバーは最大6人です');
+  const ci=cfg.members.length%MEMBER_COLORS.length;
+  cfg.members.push({id:uid(),name:'新メンバー',color:MEMBER_COLORS[ci],bg:MEMBER_BG[ci]});
+  renderMemberEditList();
+}
+function saveMembers(){saveCfg();buildAllForms();render();alert('メンバーを保存しました');}
+
+// フォーム構築
+function buildAllForms(){
+  // イベント参加メンバーチェックボックス
+  const emr=document.getElementById('ev_members_row');
+  if(emr)emr.innerHTML=cfg.members.map(m=>`<label class="checkbox-item"><input type="checkbox" id="ev_m_${m.id}"> ${m.name}</label>`).join('');
+  // 運転担当セレクト
+  const evd=document.getElementById('ev_driver');
+  if(evd)evd.innerHTML=`<option value="">未定</option>`+cfg.members.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
+  // ワリカン支払者・対象
+  const wkp=document.getElementById('wk_payer');
+  if(wkp)wkp.innerHTML=cfg.members.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
+  const wkt=document.getElementById('wk_targets_row');
+  if(wkt)wkt.innerHTML=cfg.members.map(m=>`<label class="checkbox-item"><input type="checkbox" id="wk_t_${m.id}" checked> ${m.name}</label>`).join('');
+  // ドライバー
+  const dvd=document.getElementById('dv_driver');
+  if(dvd)dvd.innerHTML=cfg.members.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
+  // バランスグリッド列数
+  const bg=document.querySelector('.balance-grid');
+  if(bg)bg.style.gridTemplateColumns=`repeat(${Math.min(cfg.members.length,3)},1fr)`;
 }
 function buildEventSelects(){
-  const opts = '<option value="">選択</option>' + db.events.map(e=>`<option value="${e.id}">${e.name}（${fmtDate(e.date)}）</option>`).join('');
-  ['tk_event','dv_event'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=opts; });
+  const opts='<option value="">選択</option>'+db.events.map(e=>`<option value="${e.id}">${e.name}（${fmtDate(e.date)}）</option>`).join('');
+  ['tk_event','dv_event'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+}
+function buildTkMemberInputs(){
+  const el=document.getElementById('tk_members_inputs');
+  if(!el)return;
+  const cols=cfg.members.length<=3?cfg.members.length:3;
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:8px">`+
+    cfg.members.map(m=>`<div><div class="form-label">${m.name}</div><input type="number" class="form-input" id="tk_m_${m.id}" placeholder="0" min="0"></div>`).join('')+
+    '</div>';
 }
 
-// ── Claude API でツイート解析 ──
-async function doAnalyze(urlId, statusId, previewId, previewContentId, btnId){
-  const url = document.getElementById(urlId).value.trim();
-  if(!url){ setStatus(statusId,'<span style="color:var(--red)">URLを入力してください</span>'); return; }
-  if(!cfg.apiKey){ setStatus(statusId,'<span style="color:var(--red)">⚠️ 設定タブでAPIキーを登録してください</span>'); return; }
-  document.getElementById(btnId).disabled = true;
-  document.getElementById(previewId).style.display = 'none';
-  setStatus(statusId, '<div class="spinner"></div>解析中...');
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'x-api-key': cfg.apiKey, 'anthropic-version':'2023-06-01' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+// モーダルオープン用（フォーム再構築してから開く）
+function openEvModal(){buildAllForms();openModal('evModal');}
+function openTkModal(){buildAllForms();buildEventSelects();buildTkMemberInputs();openModal('tkModal');}
+function openWkModal(){buildAllForms();openModal('wkModal');}
+function openDvModal(){buildAllForms();buildEventSelects();openModal('dvModal');}
+
+// Claude API でツイート解析
+async function doAnalyze(urlId,statusId,previewId,previewContentId,btnId){
+  const url=document.getElementById(urlId).value.trim();
+  if(!url){setStatus(statusId,'<span style="color:var(--red)">URLを入力してください</span>');return;}
+  if(!cfg.apiKey){setStatus(statusId,'<span style="color:var(--red)">⚠️ 設定タブでAPIキーを登録してください</span>');return;}
+  document.getElementById(btnId).disabled=true;
+  document.getElementById(previewId).style.display='none';
+  setStatus(statusId,'<div class="spinner"></div>解析中...');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':cfg.apiKey,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:1000,
         tools:[{type:'web_search_20250305',name:'web_search'}],
-        system: `あなたはアイドルグループ「高嶺のなでしこ」の推し活情報を抽出するアシスタントです。
-ツイートURLの内容を検索で取得し、イベント情報を抽出してJSONのみ返してください。余分なテキスト不要。
-
+        system:`あなたはアイドルグループ「高嶺のなでしこ」の推し活情報を抽出するアシスタントです。ツイートURLの内容を検索で取得し、イベント情報を抽出してJSONのみ返してください。余分なテキスト不要。
 {"name":"イベント名","date":"YYYY-MM-DDまたはnull","type":"ライブ|特典会|リリイベ|その他","venue":"会場名またはnull","site":"購入サイト名またはnull","url":"チケットURLまたはnull","deadline":"YYYY-MM-DDTHH:MMまたはnull","pay_deadline":"YYYY-MM-DDTHH:MMまたはnull","note":"重要情報"}
-
 現在の年は${new Date().getFullYear()}年です。`,
         messages:[{role:'user',content:`このツイートのイベント情報を抽出: ${url}`}]
       })
     });
-    const fd = await res.json();
-    const raw = (fd.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-    let parsed = null;
-    try { const m=raw.match(/\{[\s\S]*\}/); if(m) parsed=JSON.parse(m[0]); } catch(e){}
-    if(!parsed){ setStatus(statusId,'<span style="color:var(--red)">解析できませんでした。手動入力してください。</span>'); document.getElementById(btnId).disabled=false; return; }
-    pendingEvent = parsed;
-    const rows=[
-      {l:'イベント名',v:parsed.name||'不明'},
-      {l:'日付',v:parsed.date||'-'},
-      {l:'種別',v:parsed.type||'その他'},
-      {l:'会場',v:parsed.venue||'-'},
-      {l:'購入サイト',v:parsed.site||'-'},
-      {l:'応募締切',v:parsed.deadline||'-'},
-      {l:'支払締切',v:parsed.pay_deadline||'-'},
-      {l:'メモ',v:(parsed.note||'-').slice(0,60)},
-    ];
-    document.getElementById(previewContentId).innerHTML = rows.map(r=>`<div class="preview-row"><div class="preview-label">${r.l}</div><div class="preview-val">${r.v}</div></div>`).join('');
-    document.getElementById(previewId).style.display = 'block';
+    const fd=await res.json();
+    const raw=(fd.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    let parsed=null;
+    try{const m=raw.match(/\{[\s\S]*\}/);if(m)parsed=JSON.parse(m[0]);}catch(e){}
+    if(!parsed){setStatus(statusId,'<span style="color:var(--red)">解析できませんでした。手動入力してください。</span>');document.getElementById(btnId).disabled=false;return;}
+    pendingEvent=parsed;
+    const rows=[{l:'イベント名',v:parsed.name||'不明'},{l:'日付',v:parsed.date||'-'},{l:'種別',v:parsed.type||'その他'},{l:'会場',v:parsed.venue||'-'},{l:'購入サイト',v:parsed.site||'-'},{l:'応募締切',v:parsed.deadline||'-'},{l:'支払締切',v:parsed.pay_deadline||'-'},{l:'メモ',v:(parsed.note||'-').slice(0,60)}];
+    document.getElementById(previewContentId).innerHTML=rows.map(r=>`<div class="preview-row"><div class="preview-label">${r.l}</div><div class="preview-val">${r.v}</div></div>`).join('');
+    document.getElementById(previewId).style.display='block';
     setStatus(statusId,'<span style="color:var(--green)">✓ 解析完了。確認してください</span>');
-  } catch(e){ setStatus(statusId,`<span style="color:var(--red)">エラー: ${e.message}</span>`); }
-  document.getElementById(btnId).disabled = false;
+  }catch(e){setStatus(statusId,`<span style="color:var(--red)">エラー: ${e.message}</span>`);}
+  document.getElementById(btnId).disabled=false;
 }
-const analyzeTweet  = ()=>doAnalyze('tweetUrl','aiStatus','aiPreview','previewContent','analyzeBtn');
-const analyzeTweet2 = ()=>doAnalyze('tweetUrl2','aiStatus2','aiPreview2','previewContent2','analyzeBtn2');
-const setStatus = (id,html)=>{ document.getElementById(id).innerHTML=html; };
+const analyzeTweet=()=>doAnalyze('tweetUrl','aiStatus','aiPreview','previewContent','analyzeBtn');
+const analyzeTweet2=()=>doAnalyze('tweetUrl2','aiStatus2','aiPreview2','previewContent2','analyzeBtn2');
+const setStatus=(id,html)=>document.getElementById(id).innerHTML=html;
 
 function registerPending(ev){
-  db.events.push({ id:uid(), name:ev.name||'不明なイベント', date:ev.date||'', type:ev.type||'その他',
-    venue:ev.venue||'', parking:'', site:ev.site||'', url:ev.url||'',
-    deadline:ev.deadline||'', pay_deadline:ev.pay_deadline||'',
-    members_A:false, members_B:false, members_C:false, driver:'', note:ev.note||'' });
-  saveData(); render();
+  db.events.push({id:uid(),name:ev.name||'不明なイベント',date:ev.date||'',type:ev.type||'その他',venue:ev.venue||'',parking:'',site:ev.site||'',url:ev.url||'',deadline:ev.deadline||'',pay_deadline:ev.pay_deadline||'',members:{},driver:'',note:ev.note||''});
+  saveData();render();
 }
-function confirmRegister(){ if(!pendingEvent)return; registerPending(pendingEvent); document.getElementById('aiPreview').style.display='none'; document.getElementById('tweetUrl').value=''; setStatus('aiStatus','<span style="color:var(--green)">✓ 登録しました</span>'); pendingEvent=null; }
-function cancelPreview(){ document.getElementById('aiPreview').style.display='none'; pendingEvent=null; setStatus('aiStatus',''); }
-function confirmRegister2(){ if(!pendingEvent)return; registerPending(pendingEvent); document.getElementById('aiPreview2').style.display='none'; document.getElementById('tweetUrl2').value=''; setStatus('aiStatus2','<span style="color:var(--green)">✓ 登録しました</span>'); pendingEvent=null; }
-function cancelPreview2(){ document.getElementById('aiPreview2').style.display='none'; pendingEvent=null; setStatus('aiStatus2',''); }
+function confirmRegister(){if(!pendingEvent)return;registerPending(pendingEvent);document.getElementById('aiPreview').style.display='none';document.getElementById('tweetUrl').value='';setStatus('aiStatus','<span style="color:var(--green)">✓ 登録しました</span>');pendingEvent=null;}
+function cancelPreview(){document.getElementById('aiPreview').style.display='none';pendingEvent=null;setStatus('aiStatus','');}
+function confirmRegister2(){if(!pendingEvent)return;registerPending(pendingEvent);document.getElementById('aiPreview2').style.display='none';document.getElementById('tweetUrl2').value='';setStatus('aiStatus2','<span style="color:var(--green)">✓ 登録しました</span>');pendingEvent=null;}
+function cancelPreview2(){document.getElementById('aiPreview2').style.display='none';pendingEvent=null;setStatus('aiStatus2','');}
 
-// ── 設定保存 ──
+// ワリカCSVインポート
+// ワリカ ニックネーム→メンバーID変換（よく使われる呼び名も対応）
+const WALICA_NICKNAMES={
+  'はや10':'太田','はや':'太田','太田':'太田',
+  'しんくん':'角田','しん':'角田','角田':'角田',
+  'じゅんじゅん':'福田','じゅん':'福田','福田':'福田'
+};
+function walicaNameToMemberId(nick){
+  const realName=WALICA_NICKNAMES[nick.trim()]||nick.trim();
+  const m=cfg.members.find(m=>m.name===realName||nick.trim().includes(m.name));
+  return m?m.id:cfg.members[0].id;
+}
+
+function importWarikanText(){
+  const raw=document.getElementById('wkPasteText').value.trim();
+  const groupName=document.getElementById('wkImportGroup').value.trim();
+  const yearInput=document.getElementById('wkImportYear').value.trim();
+  const year=yearInput?parseInt(yearInput):new Date().getFullYear();
+  const statusEl=document.getElementById('importStatus');
+
+  if(!raw){statusEl.textContent='テキストを貼り付けてください';return;}
+
+  // 各行を解析
+  // 形式: 「品名」の次の行に「〇〇が立て替え (MM/DD)  ¥金額」
+  const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l);
+  let imported=0;
+  let i=0;
+
+  // 支払行のパターン: "Xが立て替え (MM/DD)  ¥金額" または "Xが立替え..."
+  const payLineReg=/^(.+?)が立[て]?替[え]?\s*[\(（](\d{1,2}[/／]\d{1,2})[）\)]\s*[¥￥]([\d,]+)/;
+  // 金額だけの行: "¥6,400" など（名前の後に金額が別列の場合）
+  const amountOnlyReg=/[¥￥]([\d,]+)$/;
+
+  while(i<lines.length){
+    const line=lines[i];
+    // 支払行を検出
+    const payMatch=line.match(payLineReg);
+    if(payMatch){
+      // 1行前が品名のはず
+      const itemName=(i>0&&!lines[i-1].match(payLineReg)&&!lines[i-1].match(/^[¥￥]/))
+        ?lines[i-1]
+        :(groupName||'支出');
+      const payerNick=payMatch[1];
+      const dateStr=payMatch[2]; // MM/DD
+      const amountStr=payMatch[3].replace(/,/g,'');
+      const amount=parseInt(amountStr)||0;
+      if(amount>0){
+        const [mm,dd]=dateStr.split(/[/／]/);
+        const isoDate=`${year}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+        const payerId=walicaNameToMemberId(payerNick);
+        // 品名の末尾に金額がくっついている場合は除去
+        const cleanName=itemName.replace(/[¥￥][\d,]+$/, '').replace(/\s+$/, '') || (groupName||'支出');
+        db.warikan.push({
+          id:uid(),
+          name:(groupName?groupName+'｜':'')+cleanName,
+          payer:payerId,
+          amount,
+          targets:cfg.members.map(m=>m.id),
+          date:isoDate,
+          note:'ワリカからインポート'
+        });
+        imported++;
+      }
+    }
+    i++;
+  }
+
+  if(imported===0){
+    statusEl.innerHTML='<span style="color:var(--red)">取り込めませんでした。テキストの形式を確認してください。</span>';
+    return;
+  }
+  saveData();render();
+  statusEl.innerHTML=`<span style="color:var(--green)">✓ ${imported}件を取り込みました！</span>`;
+  document.getElementById('wkPasteText').value='';
+  document.getElementById('wkImportGroup').value='';
+}
+
+// 設定保存
 function saveGasUrl(){
-  const url = document.getElementById('gasUrl').value.trim();
-  if(!url){ alert('URLを入力してください'); return; }
-  cfg.gasUrl = url; saveCfg();
-  document.getElementById('setupDone').classList.add('show');
+  const url=document.getElementById('gasUrl').value.trim();
+  if(!url){alert('URLを入力してください');return;}
+  cfg.gasUrl=url;saveCfg();
+  document.getElementById('gasStatus').style.display='block';
   loadFromGas();
 }
-function saveApiKey(){
-  cfg.apiKey = document.getElementById('cfg_api').value.trim();
-  saveCfg(); alert('APIキーを保存しました');
-}
-function saveNames(){
-  cfg.names = ['cfg_a','cfg_b','cfg_c'].map(id=>document.getElementById(id).value.trim()||cfg.names[['cfg_a','cfg_b','cfg_c'].indexOf(id)]);
-  saveCfg(); buildMemberSelects(); buildMemberCheckboxes('ev_members_row','ev_m',false); buildMemberCheckboxes('wk_targets_row','wk_m'); buildMemberInputs('tk_members_row','tk_m'); render(); alert('名前を保存しました');
-}
+function saveApiKey(){cfg.apiKey=document.getElementById('cfg_api').value.trim();saveCfg();alert('APIキーを保存しました');}
 function loadSettingsUI(){
-  document.getElementById('gasUrl').value = cfg.gasUrl;
-  document.getElementById('cfg_api').value = cfg.apiKey;
-  document.getElementById('cfg_a').value = cfg.names[0]||'';
-  document.getElementById('cfg_b').value = cfg.names[1]||'';
-  document.getElementById('cfg_c').value = cfg.names[2]||'';
-  if(cfg.gasUrl) document.getElementById('setupDone').classList.add('show');
+  document.getElementById('gasUrl').value=cfg.gasUrl;
+  document.getElementById('cfg_api').value=cfg.apiKey;
+  if(cfg.gasUrl)document.getElementById('gasStatus').style.display='block';
+  renderMemberEditList();
 }
 
-// ── GASスクリプトコード ──
-const GAS_CODE = `function doGet(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var action = e.parameter.action;
-  var data = e.parameter.data ? JSON.parse(e.parameter.data) : {};
-  var output;
-  if (action === 'save') {
-    var sheet = ss.getSheetByName('data') || ss.insertSheet('data');
-    sheet.clearContents();
-    sheet.getRange(1,1).setValue(JSON.stringify(data));
-    output = {ok: true};
-  } else if (action === 'load') {
-    var sheet = ss.getSheetByName('data');
-    if (!sheet || sheet.getLastRow() === 0) { output = {ok: true, data: {}}; }
-    else { output = {ok: true, data: JSON.parse(sheet.getRange(1,1).getValue() || '{}')}; }
-  } else {
-    output = {ok: false, error: 'unknown action'};
-  }
-  return ContentService.createTextOutput(JSON.stringify(output)).setMimeType(ContentService.MimeType.JSON).setHeaders({'Access-Control-Allow-Origin': '*'});
-}`;
+const GAS_CODE=`function doGet(e){var ss=SpreadsheetApp.getActiveSpreadsheet();var action=e.parameter.action;var data=e.parameter.data?JSON.parse(e.parameter.data):{};var output;if(action==='save'){var sheet=ss.getSheetByName('data')||ss.insertSheet('data');sheet.clearContents();sheet.getRange(1,1).setValue(JSON.stringify(data));output={ok:true};}else if(action==='load'){var sheet=ss.getSheetByName('data');if(!sheet||sheet.getLastRow()===0){output={ok:true,data:{}};}else{output={ok:true,data:JSON.parse(sheet.getRange(1,1).getValue()||'{}')};}}else{output={ok:false,error:'unknown action'};}return ContentService.createTextOutput(JSON.stringify(output)).setMimeType(ContentService.MimeType.JSON);}`;
+function copyGasCode(){navigator.clipboard.writeText(GAS_CODE).then(()=>{document.getElementById('gasCopyDone').style.display='block';setTimeout(()=>document.getElementById('gasCopyDone').style.display='none',3000);});}
 
-function copyGasCode(){
-  navigator.clipboard.writeText(GAS_CODE).then(()=>{
-    document.getElementById('gasCopyDone').style.display='block';
-    setTimeout(()=>document.getElementById('gasCopyDone').style.display='none',3000);
-  });
-}
-
-// ── レンダリング ──
+// レンダリング
 function render(){
-  buildMemberSelects();
-  buildMemberCheckboxes('ev_members_row','ev_m',false);
-  buildMemberCheckboxes('wk_targets_row','wk_m',true);
-  buildMemberInputs('tk_members_row','tk_m');
   buildEventSelects();
-  renderDash(); renderEvents(); renderTickets(); renderWarikan(); renderDrive();
-  updateAlertBadge();
+  renderDash();renderEvents();renderTickets();renderWarikan();renderDrive();
+  renderCalendar();updateAlertBadge();
 }
 
 function updateAlertBadge(){
   const list=getDeadlines();
-  const badge=document.getElementById('alertBadge');
   document.getElementById('alertCount').textContent=list.length;
-  badge.classList.toggle('show',list.length>0);
+  document.getElementById('alertBadge').classList.toggle('show',list.length>0);
 }
 
-function typeTag(t){
-  const m={ライブ:'tag-pink',特典会:'tag-amber',リリイベ:'tag-green',その他:'tag-gray'};
-  return `<span class="tag ${m[t]||'tag-gray'}">${t}</span>`;
-}
+const typeTag=t=>{const m={ライブ:'tag-pink',特典会:'tag-amber',リリイベ:'tag-green',その他:'tag-gray'};return`<span class="tag ${m[t]||'tag-gray'}">${t}</span>`;};
 
 function evCard(e){
-  const members=MID.filter(id=>e['members_'+id]).map((id,i)=>M(MID.indexOf(id)));
-  const dl=e.deadline?`<span class="tag ${urgency(e.deadline)==='today'||urgency(e.deadline)==='soon'?'tag-red':'tag-gray'}">締切 ${fmtDate(e.deadline)}</span>`:'';
-  return `<div class="card">
+  const memNames=cfg.members.filter(m=>e.members&&e.members[m.id]).map(m=>m.name);
+  const dl=e.deadline?`<span class="tag ${urgency(e.deadline)==='today'||urgency(e.deadline)==='soon'?'tag-red':'tag-gray'}">⏰${fmtDate(e.deadline)}</span>`:'';
+  return`<div class="card">
     <div class="ev-row">
       <div class="ev-date"><div class="ev-month">${fmtMon(e.date)}</div><div class="ev-day">${fmtDay(e.date)}</div></div>
       <div class="ev-info">
@@ -817,16 +757,16 @@ function evCard(e){
         <div class="ev-meta">
           ${e.venue?`<span class="tag tag-gray">📍${e.venue}</span>`:''}
           ${typeTag(e.type)}
-          ${members.length?`<span class="tag tag-blue">${members.join('・')}</span>`:''}
+          ${memNames.length?`<span class="tag tag-blue">${memNames.join('・')}</span>`:''}
           ${dl}
         </div>
         <div class="ev-meta" style="margin-top:5px">
-          ${e.driver?`<span class="tag tag-amber">🚗 ${M(MID.indexOf(e.driver))}運転</span>`:''}
+          ${e.driver?`<span class="tag tag-amber">🚗 ${mName(e.driver)}運転</span>`:''}
           ${e.parking?`<span class="tag tag-gray">🅿️${e.parking}</span>`:''}
           ${e.site?`<span class="tag tag-gray">${e.site}</span>`:''}
           ${e.url?`<a href="${e.url}" target="_blank" class="tag tag-blue" style="text-decoration:none">🔗 サイト</a>`:''}
         </div>
-        ${e.note?`<div style="font-size:11px;color:var(--text-muted);margin-top:5px;line-height:1.5">${e.note.slice(0,80)}${e.note.length>80?'…':''}</div>`:''}
+        ${e.note?`<div style="font-size:11px;color:var(--text-muted);margin-top:5px">${e.note.slice(0,80)}${e.note.length>80?'…':''}</div>`:''}
       </div>
       <button class="btn btn-danger btn-sm" onclick="deleteItem('events','${e.id}')" style="flex-shrink:0">🗑</button>
     </div>
@@ -834,12 +774,12 @@ function evCard(e){
 }
 
 function renderDash(){
-  const tE=db.events.length, tT=db.tickets.reduce((s,t)=>s+MID.reduce((ss,id)=>ss+(+t['m_'+id]||0),0),0);
-  const tS=db.warikan.reduce((s,w)=>s+(+w.amount||0),0), tK=db.drives.reduce((s,d)=>s+(+d.km||0),0);
+  const tE=db.events.length,tT=db.tickets.reduce((s,t)=>s+cfg.members.reduce((ss,m)=>ss+(+t['m_'+m.id]||0),0),0);
+  const tS=db.warikan.reduce((s,w)=>s+(+w.amount||0),0),tK=db.drives.reduce((s,d)=>s+(+d.km||0),0);
   document.getElementById('dashStats').innerHTML=`
     <div class="stat"><div class="stat-label">📅 イベント数</div><div class="stat-val">${tE}</div><div class="stat-sub">登録済み</div></div>
     <div class="stat"><div class="stat-label">🎫 購入枚数</div><div class="stat-val">${tT}</div><div class="stat-sub">累計</div></div>
-    <div class="stat"><div class="stat-label">💰 総支出</div><div class="stat-val">${tS>=10000?'¥'+Math.round(tS/1000)+'k':fmtYen(tS)}</div><div class="stat-sub">3人合計</div></div>
+    <div class="stat"><div class="stat-label">💰 総支出</div><div class="stat-val">${tS>=10000?'¥'+Math.round(tS/1000)+'k':fmtYen(tS)}</div><div class="stat-sub">合計</div></div>
     <div class="stat"><div class="stat-label">🛣 走行距離</div><div class="stat-val">${Math.round(tK).toLocaleString()}</div><div class="stat-sub">km累計</div></div>`;
   const dl=getDeadlines();
   document.getElementById('dashAlerts').innerHTML=dl.length?`<div class="alert-deadline">
@@ -862,8 +802,8 @@ function renderTickets(){
   const el=document.getElementById('tkList');
   if(!db.tickets.length){el.innerHTML='<div class="empty"><div class="empty-icon">🎫</div>チケットがありません</div>';return;}
   el.innerHTML=db.tickets.map(t=>{
-    const total=MID.reduce((s,id)=>s+(+t['m_'+id]||0),0);
-    const maxV=Math.max(...MID.map(id=>+t['m_'+id]||0),1);
+    const total=cfg.members.reduce((s,m)=>s+(+t['m_'+m.id]||0),0);
+    const maxV=Math.max(...cfg.members.map(m=>+t['m_'+m.id]||0),1);
     const price=+t.price||0;
     return`<div class="card">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
@@ -874,57 +814,60 @@ function renderTickets(){
           <button class="btn btn-danger btn-sm" onclick="deleteItem('tickets','${t.id}')">🗑</button>
         </div>
       </div>
-      ${MID.map((id,i)=>{ const cnt=+t['m_'+id]||0; return`
+      ${cfg.members.map(m=>{const cnt=+t['m_'+m.id]||0;return`
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-          <div class="avatar av-${id}" style="width:26px;height:26px;font-size:11px">${id}</div>
-          <div style="font-size:12px;min-width:40px">${M(i)}</div>
-          <div class="progress" style="flex:1"><div class="progress-fill" style="width:${maxV?Math.round(cnt/maxV*100):0}%"></div></div>
+          <div class="avatar" style="width:26px;height:26px;font-size:11px;background:${m.bg};color:${m.color}">${m.name.slice(0,1)}</div>
+          <div style="font-size:12px;min-width:36px">${m.name}</div>
+          <div class="progress" style="flex:1"><div class="progress-fill" style="width:${maxV?Math.round(cnt/maxV*100):0}%;background:${m.color}"></div></div>
           <div style="font-size:13px;font-weight:700;min-width:18px;text-align:right">${cnt}</div>
           ${price?`<div style="font-size:11px;color:var(--text-muted);min-width:48px;text-align:right">${fmtYen(cnt*price)}</div>`:''}
-        </div>`; }).join('')}
+        </div>`;}).join('')}
       ${price?`<div style="font-size:11px;color:var(--text-muted);text-align:right;margin-top:4px">合計 ${fmtYen(total*price)}</div>`:''}
     </div>`;
   }).join('');
 }
 
 function calcWarikan(){
-  const paid={A:0,B:0,C:0}, share={A:0,B:0,C:0};
+  const paid={},share={};
+  cfg.members.forEach(m=>{paid[m.id]=0;share[m.id]=0;});
   db.warikan.forEach(w=>{
-    paid[w.payer]=(paid[w.payer]||0)+(+w.amount||0);
-    const tgts=w.targets||MID, each=Math.round((+w.amount||0)/tgts.length);
-    tgts.forEach(m=>share[m]=(share[m]||0)+each);
+    if(paid[w.payer]!==undefined)paid[w.payer]+=(+w.amount||0);
+    const tgts=w.targets||cfg.members.map(m=>m.id);
+    const each=Math.round((+w.amount||0)/tgts.length);
+    tgts.forEach(id=>{if(share[id]!==undefined)share[id]+=each;});
   });
-  const bal={};
-  MID.forEach(id=>bal[id]=Math.round(paid[id]-share[id]));
+  const bal={};cfg.members.forEach(m=>bal[m.id]=Math.round(paid[m.id]-share[m.id]));
   return{paid,share,bal};
 }
 
 function renderWarikan(){
   const el=document.getElementById('wkList');
-  if(!db.warikan.length){el.innerHTML='<div class="empty"><div class="empty-icon">🧾</div>支出がありません</div>';return;}
-  const{bal}=calcWarikan(), total=db.warikan.reduce((s,w)=>s+(+w.amount||0),0);
+  if(!db.warikan.length){el.innerHTML='<div class="empty"><div class="empty-icon">🧾</div>支出がありません<br><span style="font-size:11px">上のCSVインポートで過去データを取り込めます</span></div>';return;}
+  const{bal}=calcWarikan(),total=db.warikan.reduce((s,w)=>s+(+w.amount||0),0);
+  const cols=Math.min(cfg.members.length,3);
   let html=`<div class="card" style="margin-bottom:12px">
     <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">総支出</div>
     <div style="font-size:26px;font-weight:800">${fmtYen(total)}</div>
-    <div class="balance-grid">
-      ${MID.map((id,i)=>`<div class="bal">
-        <div class="bal-name">${M(i)}</div>
-        <div class="bal-val ${bal[id]>0?'pos':bal[id]<0?'neg':'zero'}">${bal[id]>0?'+':''}${fmtYen(bal[id])}</div>
-        <div style="font-size:10px;color:var(--text-muted)">${bal[id]>0?'受取':bal[id]<0?'支払':'精算済'}</div>
+    <div class="balance-grid" style="grid-template-columns:repeat(${cols},1fr)">
+      ${cfg.members.map(m=>`<div class="bal">
+        <div class="bal-name">${m.name}</div>
+        <div class="bal-val ${bal[m.id]>0?'pos':bal[m.id]<0?'neg':'zero'}">${bal[m.id]>0?'+':''}${fmtYen(bal[m.id])}</div>
+        <div style="font-size:10px;color:var(--text-muted)">${bal[m.id]>0?'受取':bal[m.id]<0?'支払':'精算済'}</div>
       </div>`).join('')}
     </div>
   </div><div class="sec-title">支出一覧</div>`;
   html+=[...db.warikan].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(w=>{
-    const tgts=w.targets||MID, each=Math.round((+w.amount||0)/tgts.length);
+    const tgts=w.targets||cfg.members.map(m=>m.id),each=Math.round((+w.amount||0)/tgts.length);
     return`<div class="card" style="margin-bottom:8px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div style="flex:1">
           <div style="font-size:14px;font-weight:700">${w.name}</div>
           <div style="font-size:11px;color:var(--text-muted);margin-top:3px;line-height:1.6">
-            ${fmtDate(w.date)} ・ ${M(MID.indexOf(w.payer))}が立替<br>
-            ${tgts.map(id=>M(MID.indexOf(id))).join('・')}で割勘 → 1人 ${fmtYen(each)}
+            ${fmtDate(w.date)} ・ ${mName(w.payer)}が立替<br>
+            ${tgts.map(id=>mName(id)).join('・')}で割勘 → 1人 ${fmtYen(each)}
           </div>
-          ${w.note?`<div style="font-size:11px;color:var(--text-muted)">${w.note}</div>`:''}
+          ${w.note&&w.note!=='ワリカアプリからインポート'?`<div style="font-size:11px;color:var(--text-muted)">${w.note}</div>`:''}
+          ${w.note==='ワリカアプリからインポート'?`<span class="tag tag-gray" style="margin-top:4px">📥インポート</span>`:''}
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:10px">
           <div style="font-size:16px;font-weight:800">${fmtYen(+w.amount)}</div>
@@ -937,24 +880,23 @@ function renderWarikan(){
 }
 
 function renderDrive(){
-  const tK=db.drives.reduce((s,d)=>s+(+d.km||0),0), tG=db.drives.reduce((s,d)=>s+(+d.gas||0)+(+d.toll||0),0);
+  const tK=db.drives.reduce((s,d)=>s+(+d.km||0),0),tG=db.drives.reduce((s,d)=>s+(+d.gas||0)+(+d.toll||0),0);
   document.getElementById('dvStats').innerHTML=`
     <div class="stat"><div class="stat-label">🛣 総走行距離</div><div class="stat-val">${Math.round(tK).toLocaleString()}</div><div class="stat-sub">km累計</div></div>
     <div class="stat"><div class="stat-label">⛽ 交通費</div><div class="stat-val">${tG>=10000?'¥'+Math.round(tG/1000)+'k':fmtYen(tG)}</div><div class="stat-sub">ガソリン＋高速</div></div>`;
-  const byM={};
-  MID.forEach(id=>{ byM[id]={km:0,count:0,gas:0}; });
-  db.drives.forEach(d=>{ if(byM[d.driver]){ byM[d.driver].km+=+d.km||0; byM[d.driver].count++; byM[d.driver].gas+=(+d.gas||0)+(+d.toll||0); } });
-  document.getElementById('dvList').innerHTML=MID.map((id,i)=>`
+  const byM={};cfg.members.forEach(m=>{byM[m.id]={km:0,count:0,gas:0};});
+  db.drives.forEach(d=>{if(byM[d.driver]){byM[d.driver].km+=+d.km||0;byM[d.driver].count++;byM[d.driver].gas+=(+d.gas||0)+(+d.toll||0);}});
+  document.getElementById('dvList').innerHTML=cfg.members.map(m=>`
     <div class="card" style="display:flex;align-items:center;gap:12px">
-      <div class="avatar av-${id}" style="width:40px;height:40px;font-size:15px">${id}</div>
+      <div class="avatar" style="width:40px;height:40px;font-size:15px;background:${m.bg};color:${m.color}">${m.name.slice(0,1)}</div>
       <div style="flex:1">
-        <div style="font-size:14px;font-weight:700">${M(i)}</div>
-        <div style="font-size:11px;color:var(--text-muted)">${byM[id].count}回担当 ・ ${fmtYen(byM[id].gas)}</div>
-        <div class="progress" style="margin-top:6px"><div class="progress-fill" style="width:${tK?Math.round(byM[id].km/tK*100):0}%"></div></div>
+        <div style="font-size:14px;font-weight:700">${m.name}</div>
+        <div style="font-size:11px;color:var(--text-muted)">${byM[m.id].count}回担当 ・ ${fmtYen(byM[m.id].gas)}</div>
+        <div class="progress" style="margin-top:6px"><div class="progress-fill" style="width:${tK?Math.round(byM[m.id].km/tK*100):0}%;background:${m.color}"></div></div>
       </div>
       <div style="text-align:right">
-        <div style="font-size:16px;font-weight:800">${Math.round(byM[id].km).toLocaleString()}</div>
-        <div style="font-size:11px;color:var(--text-muted)">km / ${tK?Math.round(byM[id].km/tK*100):0}%</div>
+        <div style="font-size:16px;font-weight:800">${Math.round(byM[m.id].km).toLocaleString()}</div>
+        <div style="font-size:11px;color:var(--text-muted)">km / ${tK?Math.round(byM[m.id].km/tK*100):0}%</div>
       </div>
     </div>`).join('');
   const sorted=[...db.drives].sort((a,b)=>new Date(b.date)-new Date(a.date));
@@ -964,7 +906,7 @@ function renderDrive(){
         <div>
           <div style="font-size:13px;font-weight:700">${d.event_name||'イベント未設定'}</div>
           <div style="font-size:11px;color:var(--text-muted);margin-top:3px">
-            ${fmtDate(d.date)} ・ ${M(MID.indexOf(d.driver))} ・ ${Math.round(+d.km)}km
+            ${fmtDate(d.date)} ・ ${mName(d.driver)} ・ ${Math.round(+d.km)}km
             ${+d.gas?` ・ ⛽${fmtYen(+d.gas)}`:''}${+d.toll?` ・ 🛣${fmtYen(+d.toll)}`:''}
           </div>
           ${d.note?`<div style="font-size:11px;color:var(--text-muted)">${d.note}</div>`:''}
@@ -974,83 +916,65 @@ function renderDrive(){
     </div>`).join(''):'<div class="empty"><div class="empty-icon">🚗</div>記録がありません</div>';
 }
 
-// ── CRUD ──
+// CRUD
 function saveEvent(){
   const name=document.getElementById('ev_name').value.trim();
   if(!name){alert('イベント名を入力してください');return;}
-  const ev={id:uid(),name,date:document.getElementById('ev_date').value,type:document.getElementById('ev_type').value,venue:document.getElementById('ev_venue').value,parking:document.getElementById('ev_parking').value,site:document.getElementById('ev_site').value,url:document.getElementById('ev_url').value,deadline:document.getElementById('ev_deadline').value,pay_deadline:document.getElementById('ev_pay_deadline').value,driver:document.getElementById('ev_driver').value,note:document.getElementById('ev_note').value};
-  MID.forEach(id=>ev['members_'+id]=document.getElementById('ev_m_'+id)?.checked||false);
-  db.events.push(ev); saveData(); render(); closeModal('evModal');
+  const members={};
+  cfg.members.forEach(m=>{members[m.id]=document.getElementById('ev_m_'+m.id)?.checked||false;});
+  db.events.push({id:uid(),name,date:document.getElementById('ev_date').value,type:document.getElementById('ev_type').value,venue:document.getElementById('ev_venue').value,parking:document.getElementById('ev_parking').value,site:document.getElementById('ev_site').value,url:document.getElementById('ev_url').value,deadline:document.getElementById('ev_deadline').value,pay_deadline:document.getElementById('ev_pay_deadline').value,members,driver:document.getElementById('ev_driver').value,note:document.getElementById('ev_note').value});
+  saveData();render();closeModal('evModal');
   ['ev_name','ev_date','ev_venue','ev_parking','ev_site','ev_url','ev_deadline','ev_pay_deadline','ev_note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('ev_driver').value='';
 }
-
 function saveTicket(){
   const evId=document.getElementById('tk_event').value;
-  const tk={id:uid(),event_id:evId,event_name:evId?db.events.find(e=>e.id===evId)?.name:'',type:document.getElementById('tk_type').value,site:document.getElementById('tk_site').value,price:document.getElementById('tk_price').value||0,method:document.getElementById('tk_method').value,note:document.getElementById('tk_note').value};
-  MID.forEach(id=>tk['m_'+id]=document.getElementById('tk_m_'+id)?.value||0);
-  db.tickets.push(tk); saveData(); render(); closeModal('tkModal');
+  const t={id:uid(),event_id:evId,event_name:evId?db.events.find(e=>e.id===evId)?.name:'',type:document.getElementById('tk_type').value,site:document.getElementById('tk_site').value,price:document.getElementById('tk_price').value||0,method:document.getElementById('tk_method').value,note:document.getElementById('tk_note').value};
+  cfg.members.forEach(m=>{t['m_'+m.id]=document.getElementById('tk_m_'+m.id)?.value||0;});
+  db.tickets.push(t);saveData();render();closeModal('tkModal');
 }
-
 function saveWarikan(){
-  const name=document.getElementById('wk_name').value.trim(), amount=document.getElementById('wk_amount').value;
+  const name=document.getElementById('wk_name').value.trim(),amount=document.getElementById('wk_amount').value;
   if(!name||!amount){alert('内容と金額を入力してください');return;}
-  const targets=MID.filter(id=>document.getElementById('wk_m_'+id)?.checked);
+  const targets=cfg.members.filter(m=>document.getElementById('wk_t_'+m.id)?.checked).map(m=>m.id);
   if(!targets.length){alert('割り勘対象を選択してください');return;}
   db.warikan.push({id:uid(),name,payer:document.getElementById('wk_payer').value,amount:+amount,targets,date:document.getElementById('wk_date').value||new Date().toISOString().slice(0,10),note:document.getElementById('wk_note').value});
-  saveData(); render(); closeModal('wkModal');
+  saveData();render();closeModal('wkModal');
   ['wk_name','wk_amount','wk_date','wk_note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
 }
-
 function saveDrive(){
-  const km=document.getElementById('dv_km').value;
-  if(!km){alert('走行距離を入力してください');return;}
+  const km=document.getElementById('dv_km').value;if(!km){alert('走行距離を入力してください');return;}
   const evId=document.getElementById('dv_event').value;
   db.drives.push({id:uid(),event_id:evId,event_name:evId?db.events.find(e=>e.id===evId)?.name:'',driver:document.getElementById('dv_driver').value,km:+km,gas:document.getElementById('dv_gas').value||0,toll:document.getElementById('dv_toll').value||0,date:document.getElementById('dv_date').value||new Date().toISOString().slice(0,10),note:document.getElementById('dv_note').value});
-  saveData(); render(); closeModal('dvModal');
+  saveData();render();closeModal('dvModal');
   ['dv_km','dv_gas','dv_toll','dv_date','dv_note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
 }
+function deleteItem(type,id){if(!confirm('削除しますか？'))return;db[type]=db[type].filter(i=>i.id!==id);saveData();render();}
 
-function deleteItem(type,id){ if(!confirm('削除しますか？'))return; db[type]=db[type].filter(i=>i.id!==id); saveData(); render(); }
-
-// ── アラートモーダル ──
+// モーダル
 function openModal(id){
   if(id==='alertModal'){
     const list=getDeadlines();
-    document.getElementById('alertList').innerHTML=list.length?list.map(a=>`
-      <div class="alert-row" style="padding:10px 0">
-        <div class="alert-text"><b>${a.name}</b><br><span style="color:var(--text-muted);font-size:11px">${a.type}</span></div>
-        <div class="alert-days">${a.days===0?'本日！':a.days+'日後'}</div>
-      </div>`).join(''):'<div class="empty"><div class="empty-icon">✅</div>締切間近のものはありません</div>';
+    document.getElementById('alertList').innerHTML=list.length?list.map(a=>`<div class="alert-row" style="padding:10px 0"><div class="alert-text"><b>${a.name}</b><br><span style="color:var(--text-muted);font-size:11px">${a.type}</span></div><div class="alert-days">${a.days===0?'本日！':a.days+'日後'}</div></div>`).join(''):'<div class="empty"><div class="empty-icon">✅</div>締切間近のものはありません</div>';
   }
   document.getElementById(id).classList.add('show');
 }
 const closeModal=id=>document.getElementById(id).classList.remove('show');
 
-// ── タブ切り替え ──
-function switchTab(tab, el){
+function switchTab(tab,el){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('on'));
   document.getElementById('panel-'+tab).classList.add('on');
   el.classList.add('on');
 }
-
-// ── フィルター ──
 document.querySelectorAll('#evFilter .chip').forEach(chip=>{
-  chip.addEventListener('click',()=>{
-    document.querySelectorAll('#evFilter .chip').forEach(c=>c.classList.remove('on'));
-    chip.classList.add('on'); evFilterVal=chip.dataset.filter; renderEvents();
-  });
+  chip.addEventListener('click',()=>{document.querySelectorAll('#evFilter .chip').forEach(c=>c.classList.remove('on'));chip.classList.add('on');evFilterVal=chip.dataset.filter;renderEvents();});
 });
+document.querySelectorAll('.modal-bg').forEach(bg=>{bg.addEventListener('click',e=>{if(e.target===bg)bg.classList.remove('show');});});
 
-// ── モーダル外タップで閉じる ──
-document.querySelectorAll('.modal-bg').forEach(bg=>{
-  bg.addEventListener('click',e=>{ if(e.target===bg) bg.classList.remove('show'); });
-});
-
-// ── 起動 ──
+// 起動
 loadCfg();
 loadSettingsUI();
+buildAllForms();
 loadFromGas();
 </script>
 </body>
